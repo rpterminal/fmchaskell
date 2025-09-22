@@ -34,72 +34,106 @@ infixl 6 +
 
 -- Output: O means False, S O means True
 isZero :: Nat -> Nat
-isZero = undefined
+isZero O     = S O
+isZero (S n) = O
 
 -- pred is the predecessor but we define zero's to be zero
 pred :: Nat -> Nat
-pred = undefined
+pred O     = O
+pred (S n) = n
 
 -- Output: O means False, S O means True
 even :: Nat -> Nat
-even = undefined
+even O     = S O
+even (S n) = odd n
 
 odd :: Nat -> Nat
-odd = undefined
+odd O      = O
+odd (S n)  = even n
 
 -- This is called the dotminus or monus operator
 -- (also: proper subtraction, arithmetic subtraction, ...).
--- It behaves like subtraction, except that it returns 0
+-- It behaves like subtraction, except that it returns O
 -- when "normal" subtraction would return a negative number.
 monus :: Nat -> Nat -> Nat
-monus = undefined
+monus n O         = n
+monus O (S n)     = O
+monus (S m) (S n) = monus m n
 
 (-*) :: Nat -> Nat -> Nat
 (-*) = monus
 
+infixl 6 -*
+
 -- multiplication
 (*) :: Nat -> Nat -> Nat
-(*) = undefined
+m * O     = O
+m * (S n) = (m * n) + m
 
 infixl 7 *
 
 -- exponentiation
 (^) :: Nat -> Nat -> Nat
-(^) = undefined
+m ^ O     = one
+m ^ (S n) = (m ^ n) * m
 
--- decide: infix? ? ^
+infixr 8 ^
 
 -- quotient
 (/) :: Nat -> Nat -> Nat
-(/) = undefined
+m / n
+  | n == O                 = undefined
+  | m == n                 = S O
+  | isZero (m -* n) == S O = O
+  | otherwise              = S ((m -* n) / n)
+
+infixl 8 /
 
 -- remainder
 (%) :: Nat -> Nat -> Nat
-(%) = undefined
+m % n
+  | n == 0    = undefined
+  | otherwise = m monus ((m / n) * n)
+
+infixl 8 %
 
 -- divides
 -- just for a change, we start by defining the "symbolic" operator
 -- and then define `devides` as a synonym to it
 -- again, outputs: O means False, S O means True
 (|||) :: Nat -> Nat -> Nat
-(|||) = undefined
+m ||| n
+  | m == O                = undefined
+  | isZero (n % m) == S O = S O
+  | otherwise             = O
+
+infixl 9 |||
 
 -- x `absDiff` y = |x - y|
 -- (Careful here: this - is the actual minus operator we know from the integers!)
 absDiff :: Nat -> Nat -> Nat
-absDiff = undefined
+absDiff m n
+  | isZero (m -* n) == S O = n -* m
+  | otherwise              = m -* n
 
 (|-|) :: Nat -> Nat -> Nat
 (|-|) = absDiff
 
-factorial :: Nat -> Nat
-factorial = undefined
+infixl 6 |-|
 
--- signum of a number (-1, 0, or 1)
+factorial :: Nat -> Nat
+factorial O     = S O
+factorial (S n) = factorial n * (S n)
+
+-- signum of a number (-1, O, or 1)
 sg :: Nat -> Nat
-sg = undefined
+sg O     = O
+sg (S n) = S O
 
 -- lo b a is the floor of the logarithm base b of a
 lo :: Nat -> Nat -> Nat
-lo = undefined
-
+lo n m
+  | n == O                = undefined
+  | n == S O              = undefined
+  | isZero (m / n) == S O = O
+  | otherwise             = S (lo n (m / n))
