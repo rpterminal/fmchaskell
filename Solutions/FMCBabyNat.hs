@@ -79,21 +79,28 @@ m ^ (S n) = (m ^ n) * m
 
 infixr 8 ^
 
+-- less than or equal
+(<=) :: Nat -> Nat -> Nat
+O <= _ = S O
+S _ <= O = O
+(S n) <= (S m) = n <= m
+
+infix 5 <=
+
 -- quotient
 (/) :: Nat -> Nat -> Nat
-m / n
-  | n == O                 = undefined
-  | m == n                 = S O
-  | isZero (m -* n) == S O = O
-  | otherwise              = S ((m -* n) / n)
+m / O = undefined
+m / n =
+  case n <= m of 
+    O -> O
+    S O -> S ((m -* n) / n)
 
 infixl 8 /
 
 -- remainder
 (%) :: Nat -> Nat -> Nat
-m % n
-  | n == 0    = undefined
-  | otherwise = m monus ((m / n) * n)
+m % 0 = undefined
+m % n = m -* ((m / n) * n)
 
 infixl 8 %
 
@@ -102,19 +109,21 @@ infixl 8 %
 -- and then define `devides` as a synonym to it
 -- again, outputs: O means False, S O means True
 (|||) :: Nat -> Nat -> Nat
-m ||| n
-  | m == O                = undefined
-  | isZero (n % m) == S O = S O
-  | otherwise             = O
+O ||| n = undefined
+m ||| n = 
+  case n % m of
+    O -> S O
+    _ -> O
 
 infixl 9 |||
 
 -- x `absDiff` y = |x - y|
 -- (Careful here: this - is the actual minus operator we know from the integers!)
 absDiff :: Nat -> Nat -> Nat
-absDiff m n
-  | isZero (m -* n) == S O = n -* m
-  | otherwise              = m -* n
+absDiff m n =
+  case m -* n of
+    O -> n -* m
+    _ -> m -* n
 
 (|-|) :: Nat -> Nat -> Nat
 (|-|) = absDiff
@@ -132,8 +141,9 @@ sg (S n) = S O
 
 -- lo b a is the floor of the logarithm base b of a
 lo :: Nat -> Nat -> Nat
-lo n m
-  | n == O                = undefined
-  | n == S O              = undefined
-  | isZero (m / n) == S O = O
-  | otherwise             = S (lo n (m / n))
+lo O m     = undefined
+lo (S O) m = undefined
+lo n m     =
+  case m / n of
+    O -> O
+    _ -> S (lo n (m / n))
