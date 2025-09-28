@@ -29,7 +29,7 @@ flip f x y = f y x
 (.) :: (b -> c) -> (a -> b) -> a -> c
 f . g x = f (g x)
 
-infixl 9 .
+infixr 9 .
 
 -- (.>) is composition but in diagramatic notation (should be ; but Haskell forbids)
 (.>) = flip (.)
