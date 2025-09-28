@@ -95,14 +95,14 @@ n / m =
     O -> O
     S O -> S ((n -* m) / m)
 
-infixl 8 /
+infixl 7 /
 
 -- remainder
 (%) :: Nat -> Nat -> Nat
 n % O = undefined
 n % m = n -* ((n / m) * m)
 
-infixl 8 %
+infixl 7 %
 
 -- divides
 -- just for a change, we start by defining the "symbolic" operator
