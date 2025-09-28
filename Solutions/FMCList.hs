@@ -58,28 +58,36 @@ write [u,v]     for our u `Cons` (v `Cons` Nil)
 -}
 
 head :: [a] -> a
-head = undefined
+head []       = undefined
+head (x : xs) = x
 
 tail :: [a] -> [a]
-tail = undefined
+tail []       = undefined
+tail (x : xs) = xs
 
 null :: [a] -> Bool
-null = undefined
+null [] = True
+null _  = False
 
 length :: Integral i => [a] -> i
-length = undefined
+length []       = 0
+length (_ : xs) = 1 + (length xs)
 
 sum :: Num a => [a] -> a
-sum = undefined
+sum []       = 0
+sum (x : xs) = x + sum xs
 
 product :: Num a => [a] -> a
-product = undefined
+product []       = 1
+product (x : xs) = x * product xs
 
 reverse :: [a] -> [a]
-reverse = undefined
+reverse [] = []
+reverse (x : xs) = (reverse xs) ++ [x]
 
 (++) :: [a] -> [a] -> [a]
-(++) = undefined
+[] ++ xs       = xs
+(x : xs) ++ ys = x : (xs ++ ys)
 
 -- right-associative for performance!
 -- (what?!)
@@ -87,7 +95,8 @@ infixr 5 ++
 
 -- (snoc is cons written backwards)
 snoc :: a -> [a] -> [a]
-snoc = undefined
+snoc x []       = [x]
+snoc y (x : xs) = x : (snoc y xs)
 
 (<:) :: [a] -> a -> [a]
 (<:) = flip snoc
@@ -102,14 +111,31 @@ xs +++ (y:ys) = (xs +++ [y]) +++ ys
 -- (hmm?!)
 infixl 5 +++
 
--- minimum :: Ord a => [a] -> a
--- maximum :: Ord a => [a] -> a
+minimum :: Ord a => [a] -> a
+minimum []       = undefined
+minimum [x]      = x
+minimum (x : xs) = min x (minimum xs)
 
--- take
--- drop
+maximum :: Ord a => [a] -> a
+maximum []       = undefined
+maximum [x]      = x
+maximum (x : xs) = max x (maximum xs)
 
--- takeWhile
--- dropWhile
+take :: Int -> [a] -> [a]
+take n _ | n <= 0 = []
+take _ []         = []
+take n (x : xs)   = x : take (n - 1) xs
+
+drop :: Int -> [a] -> [a]
+drop n xs | n <= 0 = xs
+drop _ []          = []
+drop n (_ : xs)    = drop (n - 1) xs
+
+takeWhile :: (a -> Bool) -> [a] -> [a]
+takeWhile = undefined
+
+dropWhile :: (a -> Bool) -> [a] -> [a]
+dropWhile = undefined
 
 -- tails
 -- init
