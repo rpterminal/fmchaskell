@@ -68,7 +68,7 @@ infixl 6 -*
 -- multiplication
 (*) :: Nat -> Nat -> Nat
 n * O     = O
-n * (S m) = (n * m) + m
+n * (S m) = (n * m) + n
 
 infixl 7 *
 
