@@ -37,7 +37,7 @@ infixr 9 .
 infixl 9 .>
 
 -- ($) takes a function and a suitable argument and applies the function to the argument
--- think: why would we ever want that?
+-- think: why would we ever want that? r: f (g (h x)) = f $ g $ h $ x
 ($) :: (a -> b) -> a -> b
 f $ x = f x
 
