@@ -154,11 +154,14 @@ init (x : xs) = x : (init xs)
 
 inits :: [a] -> [[a]]
 inits []       = [[]]
-inits (x : xs) = !TO-DO!
+inits (x : xs) = [] : [(x : p) | p <- inits xs]
+-- list comprehension
 
 subsequences :: [a] -> [[a]]
-subsequences []       = []
-subsequences (x : xs) = !TO-DO!
+subsequences []       = [[]]
+subsequences (x : xs) =
+  let subs = subsequences xs
+   in subs ++ [(x : s) | s <- subs]
 
 any :: (a -> Bool) -> [a] -> Bool
 any _ [] = False
@@ -265,7 +268,7 @@ splitAt _ []          = ([], [])
 splitAt n xs | n <= 0 = ([], xs)
 splitAt n (x : xs)    =
   let (ys, zs) = splitAt (n - 1) xs
-  in (x : ys, zs)
+   in (x : ys, zs)
 
 break :: (a -> Bool) -> [a] -> ([a], [a])
 break _ []       = ([], [])
@@ -273,7 +276,7 @@ break p (x : xs)
   | p x       = ([], (x : xs))
   | otherwise =
       let (ys, zs) = break p xs
-      in (x : ys, zs)
+       in (x : ys, zs)
 
 lines :: String -> [String]
 lines "" = []
@@ -298,7 +301,7 @@ transpose xs       = (map head xs) : transpose (map tail xs)
 palindrome :: String -> Bool
 palindrome s =
   let sFmt = map C.toLower (filter C.isAlpha s)
-  in sFmt == reverse sFmt
+   in sFmt == reverse sFmt
 
 {-
 
