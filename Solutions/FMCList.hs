@@ -59,11 +59,11 @@ write [u,v]     for our u `Cons` (v `Cons` Nil)
 
 head :: [a] -> a
 head []       = undefined
-head (x : xs) = x
+head (x : _) = x
 
 tail :: [a] -> [a]
 tail []       = undefined
-tail (x : xs) = xs
+tail (_ : xs) = xs
 
 null :: [a] -> Bool
 null [] = True
@@ -132,38 +132,98 @@ drop _ []          = []
 drop n (_ : xs)    = drop (n - 1) xs
 
 takeWhile :: (a -> Bool) -> [a] -> [a]
-takeWhile = undefined
+takeWhile _ [] = []
+takeWhile p (x : xs)
+  | p x       = x : dropWhile p xs
+  | otherwise = []
 
 dropWhile :: (a -> Bool) -> [a] -> [a]
-dropWhile = undefined
+dropWhile _ [] = []
+dropWhile p (x : xs)
+  | p x       = dropWhile p xs
+  | otherwise = (x : xs)
 
--- tails
--- init
--- inits
+tails :: [a] -> [[a]]
+tails []       = [[]]
+tails (x : xs) = (x : xs) : tails xs
 
--- subsequences
+init :: [a] -> [a]
+init []       = undefined
+init [x]      = []
+init (x : xs) = x : (init xs)
 
--- any
--- all
+inits :: [a] -> [[a]]
+inits []       = [[]]
+inits (x : xs) = !TO-DO!
 
--- and
--- or
+subsequences :: [a] -> [[a]]
+subsequences []       = []
+subsequences (x : xs) = !TO-DO!
 
--- concat
+any :: (a -> Bool) -> [a] -> Bool
+any _ [] = False
+any p (x : xs)
+  | p x       = True
+  | otherwise = any p xs
 
--- elem using the funciton 'any' above
+all :: (a -> Bool) -> [a] -> Bool
+all _ [] = True
+all p (x : xs)
+  | p x       = all p xs
+  | otherwise = False
+
+and :: [Bool] -> Bool
+and []       = True
+and (b : bs) = b && (and bs)
+
+or :: [Bool] -> Bool
+or []       = False
+or (b : bs) = b || (or bs)
+
+concat :: [[a]] -> [a]
+concat []       = []
+concat (x : xs) = x ++ (concat xs)
+
+-- elem using the function 'any' above
+elem :: Eq a => [a] -> Bool
+elem e xs = any (== e) xs
 
 -- elem': same as elem but elementary definition
 -- (without using other functions except (==))
+elem' :: Eq a => a -> [a] -> Bool
+elem' e []       = False
+elem' e (x : xs)
+  | e == x    = True
+  | otherwise = elem' e xs
 
--- (!!)
+(!!) :: [a] -> Int -> a
+[] !! _       = undefined
+(x : xs) !! n
+  | n < 0     = undefined
+  | n == 0    = x
+  | otherwise = xs !! (n - 1)
 
--- filter
--- map
+filter :: (a -> Bool) -> [a] -> [a]
+filter _ [] = []
+filter p (x : xs)
+  | p x       = x : (filter p xs)
+  | otherwise = filter p xs
 
--- cycle
--- repeat
--- replicate
+map :: (a -> b) -> [a] -> [b]
+map f [] = []
+map f (x : xs) = (f x) : (map f xs)
+
+cycle :: [a] -> [a]
+cycle [] = undefined
+cycle xs = xs ++ (cycle xs)
+
+repeat :: a -> [a]
+repeat x = x : (repeat x)
+
+replicate :: Int -> a -> [a]
+replicate n x
+  | n <= 0    = []
+  | otherwise = x : (replicate (n - 1) x)
 
 -- isPrefixOf
 -- isInfixOf
