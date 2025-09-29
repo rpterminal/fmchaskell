@@ -134,7 +134,7 @@ drop n (_ : xs)    = drop (n - 1) xs
 takeWhile :: (a -> Bool) -> [a] -> [a]
 takeWhile _ [] = []
 takeWhile p (x : xs)
-  | p x       = x : dropWhile p xs
+  | p x       = x : takeWhile p xs
   | otherwise = []
 
 dropWhile :: (a -> Bool) -> [a] -> [a]
@@ -262,7 +262,7 @@ nub (x : xs) = x : nub (filter (/= x) xs)
 -- splitAt n xs  =  (take n xs, drop n xs)
 splitAt :: Int -> [a] -> ([a], [a])
 splitAt _ []          = ([], [])
-splitAt n xs | n <= 0 = ([], [xs])
+splitAt n xs | n <= 0 = ([], xs)
 splitAt n (x : xs)    =
   let (ys, zs) = splitAt (n - 1) xs
   in (x : ys, zs)
