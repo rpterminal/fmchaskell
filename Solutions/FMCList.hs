@@ -2,17 +2,34 @@
 
 module FMCList where
 
+import Data.Char qualified as C
+import Data.List qualified as L
 import Prelude
-    ( Char , String , Int , Integer , Double , Float , Bool(..)
-    , Num(..) , Integral(..) , Enum(..) , Ord(..) , Eq(..)
-    , not , (&&) , (||)
-    , (.) , ($)
-    , flip , curry , uncurry
-    , otherwise , error , undefined
-    )
-import qualified Prelude   as P
-import qualified Data.List as L
-import qualified Data.Char as C
+  ( Bool (..),
+    Char,
+    Double,
+    Enum (..),
+    Eq (..),
+    Float,
+    Int,
+    Integer,
+    Integral (..),
+    Num (..),
+    Ord (..),
+    String,
+    curry,
+    error,
+    flip,
+    not,
+    otherwise,
+    uncurry,
+    undefined,
+    ($),
+    (&&),
+    (.),
+    (||),
+  )
+import Prelude qualified as P
 
 {- import qualified ... as ... ?
 
@@ -28,7 +45,6 @@ C.toUpper :: Char -> Char
 You MUST NOT use ANY of these in your code
 
 -}
-
 
 {- Our lists vs Haskell lists
 
@@ -58,35 +74,35 @@ write [u,v]     for our u `Cons` (v `Cons` Nil)
 -}
 
 head :: [a] -> a
-head []       = undefined
+head [] = undefined
 head (x : _) = x
 
 tail :: [a] -> [a]
-tail []       = undefined
+tail [] = undefined
 tail (_ : xs) = xs
 
 null :: [a] -> Bool
 null [] = True
-null _  = False
+null _ = False
 
-length :: Integral i => [a] -> i
-length []       = 0
-length (_ : xs) = 1 + (length xs)
+length :: (Integral i) => [a] -> i
+length [] = 0
+length (_ : xs) = 1 + length xs
 
-sum :: Num a => [a] -> a
-sum []       = 0
+sum :: (Num a) => [a] -> a
+sum [] = 0
 sum (x : xs) = x + sum xs
 
-product :: Num a => [a] -> a
-product []       = 1
+product :: (Num a) => [a] -> a
+product [] = 1
 product (x : xs) = x * product xs
 
 reverse :: [a] -> [a]
 reverse [] = []
-reverse (x : xs) = (reverse xs) ++ [x]
+reverse (x : xs) = reverse xs ++ [x]
 
 (++) :: [a] -> [a] -> [a]
-[] ++ xs       = xs
+[] ++ xs = xs
 (x : xs) ++ ys = x : (xs ++ ys)
 
 -- right-associative for performance!
@@ -95,213 +111,214 @@ infixr 5 ++
 
 -- (snoc is cons written backwards)
 snoc :: a -> [a] -> [a]
-snoc x []       = [x]
-snoc y (x : xs) = x : (snoc y xs)
+snoc x [] = [x]
+snoc y (x : xs) = x : snoc y xs
 
 (<:) :: [a] -> a -> [a]
 (<:) = flip snoc
 
 -- different implementation of (++)
 (+++) :: [a] -> [a] -> [a]
-xs +++ []     = xs
-xs +++ [y]    = xs <: y
-xs +++ (y:ys) = (xs +++ [y]) +++ ys
+xs +++ [] = xs
+xs +++ [y] = xs <: y
+xs +++ (y : ys) = (xs +++ [y]) +++ ys
 
 -- left-associative for performance!
 -- (hmm?!)
 infixl 5 +++
 
-minimum :: Ord a => [a] -> a
-minimum []       = undefined
-minimum [x]      = x
+minimum :: (Ord a) => [a] -> a
+minimum [] = undefined
+minimum [x] = x
 minimum (x : xs) = min x (minimum xs)
 
-maximum :: Ord a => [a] -> a
-maximum []       = undefined
-maximum [x]      = x
+maximum :: (Ord a) => [a] -> a
+maximum [] = undefined
+maximum [x] = x
 maximum (x : xs) = max x (maximum xs)
 
 take :: Int -> [a] -> [a]
 take n _ | n <= 0 = []
-take _ []         = []
-take n (x : xs)   = x : take (n - 1) xs
+take _ [] = []
+take n (x : xs) = x : take (n - 1) xs
 
 drop :: Int -> [a] -> [a]
 drop n xs | n <= 0 = xs
-drop _ []          = []
-drop n (_ : xs)    = drop (n - 1) xs
+drop _ [] = []
+drop n (_ : xs) = drop (n - 1) xs
 
 takeWhile :: (a -> Bool) -> [a] -> [a]
 takeWhile _ [] = []
 takeWhile p (x : xs)
-  | p x       = x : takeWhile p xs
+  | p x = x : takeWhile p xs
   | otherwise = []
 
 dropWhile :: (a -> Bool) -> [a] -> [a]
 dropWhile _ [] = []
 dropWhile p (x : xs)
-  | p x       = dropWhile p xs
-  | otherwise = (x : xs)
+  | p x = dropWhile p xs
+  | otherwise = x : xs
 
 tails :: [a] -> [[a]]
-tails []       = [[]]
+tails [] = [[]]
 tails (x : xs) = (x : xs) : tails xs
 
 init :: [a] -> [a]
-init []       = undefined
-init [x]      = []
-init (x : xs) = x : (init xs)
+init [] = undefined
+init [x] = []
+init (x : xs) = x : init xs
 
 inits :: [a] -> [[a]]
-inits []       = [[]]
-inits (x : xs) = [] : [(x : p) | p <- inits xs]
+inits [] = [[]]
+inits (x : xs) = [] : [x : p | p <- inits xs]
+
 -- list comprehension
 
 subsequences :: [a] -> [[a]]
-subsequences []       = [[]]
+subsequences [] = [[]]
 subsequences (x : xs) =
   let subs = subsequences xs
-   in subs ++ [(x : s) | s <- subs]
+   in subs ++ [x : s | s <- subs]
 
 any :: (a -> Bool) -> [a] -> Bool
 any _ [] = False
 any p (x : xs)
-  | p x       = True
+  | p x = True
   | otherwise = any p xs
 
 all :: (a -> Bool) -> [a] -> Bool
 all _ [] = True
 all p (x : xs)
-  | p x       = all p xs
+  | p x = all p xs
   | otherwise = False
 
 and :: [Bool] -> Bool
-and []       = True
-and (b : bs) = b && (and bs)
+and [] = True
+and (b : bs) = b && and bs
 
 or :: [Bool] -> Bool
-or []       = False
-or (b : bs) = b || (or bs)
+or [] = False
+or (b : bs) = b || or bs
 
 concat :: [[a]] -> [a]
-concat []       = []
-concat (x : xs) = x ++ (concat xs)
+concat [] = []
+concat (x : xs) = x ++ concat xs
 
 -- elem using the function 'any' above
-elem :: Eq a => [a] -> Bool
+elem :: (Eq a) => a -> [a] -> Bool
 elem e xs = any (== e) xs
 
 -- elem': same as elem but elementary definition
 -- (without using other functions except (==))
-elem' :: Eq a => a -> [a] -> Bool
-elem' e []       = False
+elem' :: (Eq a) => a -> [a] -> Bool
+elem' e [] = False
 elem' e (x : xs)
-  | e == x    = True
+  | e == x = True
   | otherwise = elem' e xs
 
 (!!) :: [a] -> Int -> a
-[] !! _       = undefined
+[] !! _ = undefined
 (x : xs) !! n
-  | n < 0     = undefined
-  | n == 0    = x
+  | n < 0 = undefined
+  | n == 0 = x
   | otherwise = xs !! (n - 1)
 
 filter :: (a -> Bool) -> [a] -> [a]
 filter _ [] = []
 filter p (x : xs)
-  | p x       = x : (filter p xs)
+  | p x = x : filter p xs
   | otherwise = filter p xs
 
 map :: (a -> b) -> [a] -> [b]
 map f [] = []
-map f (x : xs) = (f x) : (map f xs)
+map f (x : xs) = f x : map f xs
 
 cycle :: [a] -> [a]
 cycle [] = undefined
-cycle xs = xs ++ (cycle xs)
+cycle xs = xs ++ cycle xs
 
 repeat :: a -> [a]
-repeat x = x : (repeat x)
+repeat x = x : repeat x
 
 replicate :: Int -> a -> [a]
 replicate n x
-  | n <= 0    = []
-  | otherwise = x : (replicate (n - 1) x)
+  | n <= 0 = []
+  | otherwise = x : replicate (n - 1) x
 
-isPrefixOf :: Eq a => [a] -> [a] -> Bool
-isPrefixOf [] _              = True
-isPrefixOf (_ : _) []        = False
+isPrefixOf :: (Eq a) => [a] -> [a] -> Bool
+isPrefixOf [] _ = True
+isPrefixOf (_ : _) [] = False
 isPrefixOf (x : xs) (y : ys) = x == y && isPrefixOf xs ys
 
-isInfixOf :: Eq a => [a] -> [a] -> Bool
-isInfixOf [] _       = True
+isInfixOf :: (Eq a) => [a] -> [a] -> Bool
+isInfixOf [] _ = True
 isInfixOf (_ : _) [] = False
-isInfixOf xs ys      = isPrefixOf xs ys || isInfixOf xs (tail ys)
+isInfixOf xs ys = isPrefixOf xs ys || isInfixOf xs (tail ys)
 
-isSuffixOf :: Eq a => [a] -> [a] -> Bool
+isSuffixOf :: (Eq a) => [a] -> [a] -> Bool
 isSuffixOf xs ys = isPrefixOf (reverse xs) (reverse ys)
 
 zip :: [a] -> [b] -> [(a, b)]
-zip [] _              = []
-zip _ []              = []
-zip (x : xs) (y : ys) = (x, y) : (zip xs ys)
+zip [] _ = []
+zip _ [] = []
+zip (x : xs) (y : ys) = (x, y) : zip xs ys
 
 zipWith :: (a -> b -> c) -> [a] -> [b] -> [c]
-zipWith _ [] _              = []
-zipWith _ _ []              = []
-zipWith f (x : xs) (y : ys) = (f x y) : (zipWith f xs ys)
+zipWith _ [] _ = []
+zipWith _ _ [] = []
+zipWith f (x : xs) (y : ys) = f x y : zipWith f xs ys
 
 intercalate :: [a] -> [[a]] -> [a]
-intercalate _ []       = []
-intercalate _ [x]      = x
-intercalate w (x : xs) = x ++ w ++ (intercalate w xs)
+intercalate _ [] = []
+intercalate _ [x] = x
+intercalate w (x : xs) = x ++ w ++ intercalate w xs
 
-nub :: Eq a => [a] -> [a]
-nub []       = []
+nub :: (Eq a) => [a] -> [a]
+nub [] = []
 nub (x : xs) = x : nub (filter (/= x) xs)
 
 -- splitAt
 -- what is the problem with the following?:
 -- splitAt n xs  =  (take n xs, drop n xs)
 splitAt :: Int -> [a] -> ([a], [a])
-splitAt _ []          = ([], [])
+splitAt _ [] = ([], [])
 splitAt n xs | n <= 0 = ([], xs)
-splitAt n (x : xs)    =
+splitAt n (x : xs) =
   let (ys, zs) = splitAt (n - 1) xs
    in (x : ys, zs)
 
 break :: (a -> Bool) -> [a] -> ([a], [a])
-break _ []       = ([], [])
+break _ [] = ([], [])
 break p (x : xs)
-  | p x       = ([], (x : xs))
+  | p x = ([], x : xs)
   | otherwise =
       let (ys, zs) = break p xs
        in (x : ys, zs)
 
 lines :: String -> [String]
 lines "" = []
-lines s = !TO-DO!
+lines s = undefined
 
 words :: String -> [String]
 words "" = []
-words s = !TO-DO!
+words s = undefined
 
 unlines :: [String] -> String
-unlines = !TO-DO!
+unlines = undefined
 
 unwords :: [String] -> String
-unwords = !TO-DO!
+unwords = undefined
 
 transpose :: [[a]] -> [[a]]
-transpose []       = []
+transpose [] = []
 transpose ([] : _) = []
-transpose xs       = (map head xs) : transpose (map tail xs)
+transpose xs = map head xs : transpose (map tail xs)
 
 -- checks if the letters of a phrase form a palindrome (see below for examples)
 palindrome :: String -> Bool
 palindrome s =
-  let sFmt = map C.toLower (filter C.isAlpha s)
-   in sFmt == reverse sFmt
+  let sFormat = map C.toLower (filter C.isAlpha s)
+   in sFormat == reverse sFormat
 
 {-
 
@@ -314,4 +331,3 @@ Examples of palindromes:
 "Doc, note I dissent.  A fast never prevents a fatness.  I diet on cod."
 
 -}
-
