@@ -1,12 +1,15 @@
 {-# LANGUAGE GADTs #-}
 
-module ExList where
+module FMCFun where
 
 import Prelude hiding
-    ( (.) , ($)
-    , flip , curry , uncurry
-    , iterate
-    )
+  ( curry,
+    flip,
+    iterate,
+    uncurry,
+    ($),
+    (.),
+  )
 
 -- use your mind to infer the types, don't cheat!
 
@@ -27,7 +30,7 @@ flip f x y = f y x
 
 -- (.) takes two composable functions and returns their composition
 (.) :: (b -> c) -> (a -> b) -> a -> c
-f . g x = f (g x)
+(f . g) x = f (g x)
 
 infixr 9 .
 
@@ -50,4 +53,3 @@ iterate f x = x : iterate f (f x)
 -- orbit
 orbit :: a -> (a -> a) -> [a]
 orbit = flip iterate
-
