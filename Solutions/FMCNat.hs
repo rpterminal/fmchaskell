@@ -160,7 +160,14 @@ infixl 7 <%>
 
 -- euclidean division
 eucdiv :: (Nat, Nat) -> (Nat, Nat)
-eucdiv (n, m) = ((n </> m), (n <%> m))
+eucdiv (_, O) = error "division by O"
+eucdiv (n, m)
+  | n < m = (O, n)
+  | otherwise = (q, r)
+  where
+    q = S q'
+    r = r'
+    (q', r') = eucdiv (n - m, m)
 
 -- divides
 (<|>) :: Nat -> Nat -> Bool
