@@ -297,17 +297,30 @@ break p (x : xs)
 
 lines :: String -> [String]
 lines "" = []
-lines s = undefined
+lines s =
+  let (line, rest) = break (== '\n') s
+   in case rest of
+        "" -> [line]
+        (_ : rs) -> line : lines rs
 
 words :: String -> [String]
 words "" = []
-words s = undefined
+words s =
+  let s1 = dropWhile myIsSpace s
+   in if null s1
+        then []
+        else
+          let (word, s2) = break myIsSpace s1
+           in word : words s2
 
 unlines :: [String] -> String
-unlines = undefined
+unlines [] = ""
+unlines (l : ls) = l ++ "\n" ++ unlines ls
 
 unwords :: [String] -> String
-unwords = undefined
+unwords [] = ""
+unwords [w] = w
+unwords (w : ws) = w ++ " " ++ unwords ws
 
 transpose :: [[a]] -> [[a]]
 transpose [] = []
@@ -317,7 +330,7 @@ transpose xs = map head xs : transpose (map tail xs)
 -- checks if the letters of a phrase form a palindrome (see below for examples)
 palindrome :: String -> Bool
 palindrome s =
-  let sFormat = map C.toLower (filter C.isAlpha s)
+  let sFormat = map myToLower (filter myIsAlpha s)
    in sFormat == reverse sFormat
 
 {-
@@ -331,3 +344,14 @@ Examples of palindromes:
 "Doc, note I dissent.  A fast never prevents a fatness.  I diet on cod."
 
 -}
+
+myIsSpace :: Char -> Bool
+myIsSpace c = elem c " \t\n\r"
+
+myIsAlpha :: Char -> Bool
+myIsAlpha c = (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
+
+myToLower :: Char -> Char
+myToLower c
+  | c >= 'A' && c <= 'Z' = toEnum (fromEnum c + 32)
+  | otherwise = c
